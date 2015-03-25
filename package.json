@@ -1,0 +1,12 @@
+{
+  "name": "atom-shell-demo",
+  "version": "0.0.1",
+  "devDependencies": {
+    "asar": "^0.4.0",
+    "atom-shell": "^0.22.1"
+  },
+  "scripts": {
+    "start": "node_modules/.bin/atom-shell app",
+    "asar": "node_modules/.bin/asar pack app app.asar"
+  }
+}

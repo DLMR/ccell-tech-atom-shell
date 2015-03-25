@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CCell Tech Demo</title>
+    <style>
+      .btn {
+        background: #4285f4;
+        border: none;
+        color: #fff;
+        padding: 5px 12px;
+        margin-bottom: 10px;
+      }
+
+      .default {
+        background: #0f9d58;
+      }
+
+      #file-content {
+        display: block;
+        width: 100%;
+        min-height: 300px;
+      }
+    </style>
+    <script src="./jquery-2.1.3.min.js"></script>
+    <script>
+      window.$ = require(__dirname + '/jquery-2.1.3.min.js');
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center;">
+      <h1 style="-webkit-app-region: drag">CCell Tech Demo</h1>
+      <img style="width: 100%" src="https://www.netlight.com/wp-content/themes/new_netlight_main/static/images/logo.png"/>
+      <p>We are using node.js <script>document.write(process.version)</script>
+      and atom-shell <script>document.write(process.versions['atom-shell'])</script>.</p>
+      <hr/>
+      <button id="open-file" class="btn default">Open file</button>
+      <button id="sync-test" class="btn">Ping the Browser Process</button>
+      <button id="remote-test" class="btn">Open a new Window using 'remote'</button>
+      <textarea id="file-content"></textarea>
+    </div>
+    <script>
+    const ipc = require('ipc'),
+          fs = require('fs'),
+          remote = require('remote'),
+          path = require('path');
+
+
+    // jQuery Test
+    console.log($('#synt-test').html);
+
+    document.getElementById('open-file').addEventListener('click', function () {
+      ipc.send('asynchronous-message', 'select-file');
+    });
+
+    document.getElementById('sync-test').addEventListener('click', function () {
+      var response = ipc.sendSync('synchronous-message', 'ping');
+      alert(response);
+    });
+
+    document.getElementById('remote-test').addEventListener('click', function () {
+      // Careful with callback
+      var BrowserWindow = remote.require('browser-window');
+      var win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        title: 'CCell Tech Demo Browser',
+        icon: path.join(__dirname, 'app.png')
+      });
+      win.loadUrl('http://github.com');
+    });
+
+    ipc.on('asynchronous-reply', function(arg) {
+      var fileContent = fs.readFileSync(arg, {'encoding': 'utf-8'});
+      document.getElementById('file-content').value = fileContent;
+    });
+    </script>
+  </body>
+</html>
